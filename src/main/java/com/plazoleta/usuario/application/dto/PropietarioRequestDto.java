@@ -1,33 +1,35 @@
-package com.plazoleta.usuario.infrastructure.out.jpa.entity;
+package com.plazoleta.usuario.application.dto;
 
-import com.plazoleta.usuario.domain.model.Rol;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Check;
+import jakarta.validation.constraints.*;
+import lombok.*;
+
 
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "usuario")
-@Check(constraints = "rol IN ('ADMIN', 'CLIENTE', 'EMPLEADO', 'PROPIETARIO')")
-public class UsuarioEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String nombre;
-    private String apellido;
-    private int documentoDeIdentidad;
-    private String celular;
-    private LocalDate fechaNacimiento;
-    private String correo;
-    private String clave;
-    @Enumerated(EnumType.STRING)
-    private Rol rol;
 
-    public UsuarioEntity(Long id, String nombre, String apellido, int documentoDeIdentidad, String celular, LocalDate fechaNacimiento, String correo, String clave, Rol rol) {
-        this.id = id;
+public class PropietarioRequestDto{
+    @NotBlank
+    private String nombre;
+    @NotBlank
+    private String apellido;
+    @NotNull
+    @Digits(integer = 20, fraction = 0)
+    private int documentoDeIdentidad;
+    @NotNull
+    @Pattern(regexp = "^\\+?[0-9]{9,13}$", message = "Número de celular inválido")
+    private String celular;
+    @NotNull
+    private LocalDate fechaNacimiento;
+    @NotBlank
+    @Email
+    private String correo;
+    @NotBlank
+    private String clave;
+
+    public PropietarioRequestDto() {
+    }
+
+    public PropietarioRequestDto(String nombre, String apellido, int documentoDeIdentidad, String celular, LocalDate fechaNacimiento, String correo, String clave) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.documentoDeIdentidad = documentoDeIdentidad;
@@ -35,17 +37,6 @@ public class UsuarioEntity {
         this.fechaNacimiento = fechaNacimiento;
         this.correo = correo;
         this.clave = clave;
-        this.rol = rol;
-    }
-    public UsuarioEntity() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getNombre() {
@@ -102,13 +93,5 @@ public class UsuarioEntity {
 
     public void setClave(String clave) {
         this.clave = clave;
-    }
-
-    public Rol getRol() {
-        return rol;
-    }
-
-    public void setRol(Rol rol) {
-        this.rol = rol;
     }
 }
