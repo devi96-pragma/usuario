@@ -18,9 +18,11 @@ public class UsuarioEntity {
     private Long id;
     private String nombre;
     private String apellido;
+    @Column(unique = true)
     private int documentoDeIdentidad;
     private String celular;
     private LocalDate fechaNacimiento;
+    @Column(unique = true)
     private String correo;
     private String clave;
     @Enumerated(EnumType.STRING)

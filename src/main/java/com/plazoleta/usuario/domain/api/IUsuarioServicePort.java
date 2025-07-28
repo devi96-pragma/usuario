@@ -2,8 +2,11 @@ package com.plazoleta.usuario.domain.api;
 
 import com.plazoleta.usuario.domain.model.Usuario;
 
-import java.util.List;
+import java.util.Optional;
+
 
 public interface IUsuarioServicePort {
-    void crearPropietario(Usuario usuario);
+    String crearPropietario(Usuario usuario);
+    Usuario buscarUsuarioPorId(Long idUsuario);
+
 }

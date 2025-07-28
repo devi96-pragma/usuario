@@ -1,8 +1,11 @@
 package com.plazoleta.usuario.application.dto;
 
+import com.plazoleta.usuario.domain.model.Rol;
 import jakarta.validation.constraints.*;
-import lombok.*;
-
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
@@ -10,23 +13,13 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PropietarioRequestDto{
-    @NotBlank
+public class PropietarioResponseDto {
+    private Long id;
     private String nombre;
-    @NotBlank
     private String apellido;
-    @NotNull
-    @Digits(integer = 20, fraction = 0)
     private int documentoDeIdentidad;
-    @NotNull
-    @Pattern(regexp = "^\\+?[0-9]{9,13}$", message = "Número de celular inválido")
     private String celular;
-    @NotNull
     private LocalDate fechaNacimiento;
-    @NotBlank
-    @Email
     private String correo;
-    @NotBlank
-    private String clave;
-
+    private Rol rol;
 }

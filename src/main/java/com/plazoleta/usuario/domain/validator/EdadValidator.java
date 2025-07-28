@@ -1,7 +1,7 @@
 package com.plazoleta.usuario.domain.validator;
 
-import com.plazoleta.usuario.infrastructure.exception.UsuarioNoMayorEdadException;
-import com.plazoleta.usuario.infrastructure.exception.UsuarioSinFechaNacimientoException;
+import com.plazoleta.usuario.domain.exception.UsuarioNoMayorEdadException;
+import com.plazoleta.usuario.domain.exception.UsuarioSinFechaNacimientoException;
 
 import java.time.LocalDate;
 import java.time.Period;

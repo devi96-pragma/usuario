@@ -1,6 +1,6 @@
-package com.plazoleta.usuario.infrastructure.out.jpa.adapter;
+package com.plazoleta.usuario.infrastructure.out.bcrypt.adapter;
 
-import com.plazoleta.usuario.domain.api.IPasswordEncoderPort;
+import com.plazoleta.usuario.domain.spi.IPasswordEncoderPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
