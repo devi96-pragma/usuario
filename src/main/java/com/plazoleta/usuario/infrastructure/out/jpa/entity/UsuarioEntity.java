@@ -19,7 +19,7 @@ public class UsuarioEntity {
     private String nombre;
     private String apellido;
     @Column(unique = true)
-    private int documentoDeIdentidad;
+    private Integer documentoDeIdentidad;
     private String celular;
     private LocalDate fechaNacimiento;
     @Column(unique = true)

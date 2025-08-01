@@ -17,8 +17,11 @@ public class UsuarioJpaAdapter implements IUsuarioPersistencePort {
     private final IUsuarioEntityMapper usuarioEntityMapper;
 
     @Override
-    public void guardarPropietario(Usuario usuario) {
-        usuarioRepository.save(usuarioEntityMapper.toEntity(usuario));
+    public Usuario guardarUsuario(Usuario usuario) {
+        return
+                usuarioEntityMapper.toDomain(
+                        usuarioRepository.save(usuarioEntityMapper.toEntity(usuario))
+                );
     }
 
     @Override

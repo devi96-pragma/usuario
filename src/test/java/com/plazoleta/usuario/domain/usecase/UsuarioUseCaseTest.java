@@ -1,7 +1,10 @@
 package com.plazoleta.usuario.domain.usecase;
 
+import com.plazoleta.usuario.domain.exception.UsuarioNoEncontradoException;
 import com.plazoleta.usuario.domain.exception.UsuarioNoMayorEdadException;
 import com.plazoleta.usuario.domain.exception.UsuarioSinFechaNacimientoException;
+import com.plazoleta.usuario.domain.model.EmpleadoCreadoEvento;
+import com.plazoleta.usuario.domain.spi.IEmpleadoEventPublisherPort;
 import com.plazoleta.usuario.domain.spi.IPasswordEncoderPort;
 import com.plazoleta.usuario.domain.model.Rol;
 import com.plazoleta.usuario.domain.model.Usuario;
@@ -27,7 +30,8 @@ public class UsuarioUseCaseTest {
     private IPasswordEncoderPort passwordEncoderPort;
     @InjectMocks
     private UsuarioUseCase usuarioUseCase;
-
+    @Mock
+    private IEmpleadoEventPublisherPort empleadoEventPublisherPort;
     //Happy path: Guardar propietario con clave hasheada y rol cambiado
     @Test
     void testGuardarPropietario_hashearClaveYCambiarRol() {
@@ -45,12 +49,12 @@ public class UsuarioUseCaseTest {
         when(passwordEncoderPort.encode("clave")).thenReturn("hashedClave");
 
         // Act
-        usuarioUseCase.crearPropietario(usuario);
+        usuarioUseCase.crearUsuarioPropietario(usuario);
 
         // Assert
         assertThat(usuario.getClave()).isEqualTo("hashedClave");
         assertThat(usuario.getRol()).isEqualTo(Rol.PROPIETARIO);
-        verify(usuarioPersistencePort, times(1)).guardarPropietario(usuario);
+        verify(usuarioPersistencePort, times(1)).guardarUsuario(usuario);
     }
     //Negative path: Guardar propietario con fecha de nacimiento inválida (menor de edad)
     @Test
@@ -69,10 +73,10 @@ public class UsuarioUseCaseTest {
 
         // Act + Assert
         assertThrows(UsuarioNoMayorEdadException.class, () -> {
-            usuarioUseCase.crearPropietario(usuario);
+            usuarioUseCase.crearUsuarioPropietario(usuario);
         });
         // Verificar que no se guarde el usuario porque la fecha de nacimiento es inválida
-        verify(usuarioPersistencePort, never()).guardarPropietario(any());
+        verify(usuarioPersistencePort, never()).guardarUsuario(any());
     }
     //Negative path: Guardar propietario con fecha de nacimiento inválida (menor de edad)
     @Test
@@ -91,10 +95,10 @@ public class UsuarioUseCaseTest {
 
         // Act + Assert
         assertThrows(UsuarioSinFechaNacimientoException.class, () -> {
-            usuarioUseCase.crearPropietario(usuario);
+            usuarioUseCase.crearUsuarioPropietario(usuario);
         });
         // Verificar que no se guarde el usuario porque la fecha de nacimiento es inválida
-        verify(usuarioPersistencePort, never()).guardarPropietario(any());
+        verify(usuarioPersistencePort, never()).guardarUsuario(any());
     }
     //Happy path: Buscar usuario por ID
     @Test
@@ -127,11 +131,74 @@ public class UsuarioUseCaseTest {
     void testBuscarUsuarioPorId_noExiste() {
         // Arrange
         Long idUsuario = 999L; // ID que no existe
-        when(usuarioPersistencePort.buscarUsuarioPorId(idUsuario)).thenReturn(null);
-        // Act
-        Usuario resultado = usuarioUseCase.buscarUsuarioPorId(idUsuario);
+        when(usuarioPersistencePort.buscarUsuarioPorId(idUsuario)).thenReturn(Optional.empty());
+        // Act + Assert
+        assertThrows(UsuarioNoEncontradoException.class, () -> {
+            usuarioUseCase.buscarUsuarioPorId(idUsuario);
+        });
         // Assert
-        assertThat(resultado).isNull();
         verify(usuarioPersistencePort, times(1)).buscarUsuarioPorId(idUsuario);
+    }
+    //Happy path: Guardar empleado con clave hasheada y rol cambiado
+    @Test
+    void testGuardarEmpleado_hashearClaveYCambiarRol() {
+        //Arrange
+        Usuario usuario = new Usuario();
+        usuario.setClave("clave");
+        usuario.setFechaNacimiento(LocalDate.of(1996, 8, 9));
+        Usuario usuarioGuardado = new Usuario();
+        usuarioGuardado.setId(1L);
+        usuarioGuardado.setClave("hashedClave");
+        usuarioGuardado.setFechaNacimiento(LocalDate.of(1996, 8, 9));
+        when(passwordEncoderPort.encode("clave")).thenReturn("hashedClave");
+        when(usuarioPersistencePort.guardarUsuario(usuario)).thenReturn(usuarioGuardado);
+        doNothing().when(empleadoEventPublisherPort).publicarEmpleadoCreado(any(EmpleadoCreadoEvento.class));
+        //Act
+        usuarioUseCase.crearUsuarioEmpleado(usuario, 1L);
+        // Assert
+        assertThat(usuario.getRol()).isEqualTo(Rol.EMPLEADO);
+        assertThat(usuario.getClave()).isEqualTo("hashedClave");
+        verify(usuarioPersistencePort, times(1)).guardarUsuario(usuario);
+    }
+    //Negative path: Guardar empleado con fecha de nacimiento inválida (menor de edad)
+    @Test
+    void testGuardarEmpleado_fechaNacimientoMenorDe18() {
+        Usuario usuario = new Usuario();
+        usuario.setClave("clave");
+        usuario.setFechaNacimiento(LocalDate.of(2024, 8, 9));
+        // Act + Assert
+        assertThrows(UsuarioNoMayorEdadException.class, () -> {
+            usuarioUseCase.crearUsuarioEmpleado(usuario, 1L);
+        });
+        // Verificar que no se guarde el usuario porque la fecha de nacimiento es inválida
+        verify(usuarioPersistencePort, never()).guardarUsuario(any());
+    }
+    //Happy path: Guardar Cliente con clave hasheada y rol cambiado
+    @Test
+    void testGuardarCliente_hashearClaveYCambiarRol() {
+        //Arrange
+        Usuario usuario = new Usuario();
+        usuario.setClave("clave");
+        usuario.setFechaNacimiento(LocalDate.of(1996, 8, 9));
+        when(passwordEncoderPort.encode("clave")).thenReturn("hashedClave");
+        //Act
+        usuarioUseCase.crearUsuarioCliente(usuario);
+        // Assert
+        assertThat(usuario.getRol()).isEqualTo(Rol.CLIENTE);
+        assertThat(usuario.getClave()).isEqualTo("hashedClave");
+        verify(usuarioPersistencePort, times(1)).guardarUsuario(usuario);
+    }
+    //Negative path: Guardar Cliente con fecha de nacimiento inválida (menor de edad)
+    @Test
+    void testGuardarCliente_fechaNacimientoMenorDe18() {
+        Usuario usuario = new Usuario();
+        usuario.setClave("clave");
+        usuario.setFechaNacimiento(LocalDate.of(2024, 8, 9));
+        // Act + Assert
+        assertThrows(UsuarioNoMayorEdadException.class, () -> {
+            usuarioUseCase.crearUsuarioCliente(usuario);
+        });
+        // Verificar que no se guarde el usuario porque la fecha de nacimiento es inválida
+        verify(usuarioPersistencePort, never()).guardarUsuario(any());
     }
 }

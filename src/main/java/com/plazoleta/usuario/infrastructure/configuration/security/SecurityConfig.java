@@ -13,6 +13,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtFilter;
@@ -33,7 +34,9 @@ public class SecurityConfig {
                                 "/v3/api-docs.yaml"
                         ).permitAll()  // 👈 Swagger libre
                         .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/usuarios/clientes").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios/propietarios").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.POST, "/usuarios/empleados").hasRole("PROPIETARIO")
                         .requestMatchers(HttpMethod.GET, "/usuarios/*").hasAnyRole("ADMINISTRADOR","PROPIETARIO")
                         .anyRequest().authenticated()
                 )

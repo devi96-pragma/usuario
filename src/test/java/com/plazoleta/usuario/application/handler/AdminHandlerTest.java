@@ -1,10 +1,9 @@
 package com.plazoleta.usuario.application.handler;
 
-import com.plazoleta.usuario.application.dto.PropietarioRequestDto;
-import com.plazoleta.usuario.application.dto.PropietarioResponseDto;
-import com.plazoleta.usuario.application.mapper.IPropietarioRequestMapper;
+import com.plazoleta.usuario.application.dto.UsuarioRequestDto;
+import com.plazoleta.usuario.application.dto.UsuarioResponseDto;
+import com.plazoleta.usuario.application.mapper.IUsuarioRequestMapper;
 import com.plazoleta.usuario.domain.api.IUsuarioServicePort;
-import com.plazoleta.usuario.domain.exception.UsuarioNoEsPropietarioException;
 import com.plazoleta.usuario.domain.model.Rol;
 import com.plazoleta.usuario.domain.model.Usuario;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,7 @@ public class AdminHandlerTest {
     @Mock
     private IUsuarioServicePort servicePort;
     @Mock
-    private IPropietarioRequestMapper mapper;
+    private IUsuarioRequestMapper mapper;
     @InjectMocks
     private UsuarioHandler adminHandler;
 
@@ -33,7 +32,7 @@ public class AdminHandlerTest {
     public void crearPropietario_ConPropietario_Exitoso() {
         // Arrange
         // Aquí puedes configurar el mock de servicePort y mapper según sea necesario
-        PropietarioRequestDto dto =  new  PropietarioRequestDto(
+        UsuarioRequestDto dto =  new  UsuarioRequestDto(
                 "Harold",
                 "Gomez",
                 12345678,
@@ -54,11 +53,11 @@ public class AdminHandlerTest {
                 "Harold");
         when(mapper.toDomain(dto)).thenReturn(usuario);
         // Act
-        adminHandler.crearUsuarioPropietario(dto);
+        adminHandler.crearPropietario(dto);
 
         // Assert
         Mockito.verify(servicePort,times(1))
-                .crearPropietario(usuario);
+                .crearUsuarioPropietario(usuario);
     }
     // HappyPath: buscarPropietarioPorId con éxito
     @Test
@@ -69,11 +68,11 @@ public class AdminHandlerTest {
         usuario.setRol(com.plazoleta.usuario.domain.model.Rol.PROPIETARIO);
         when(servicePort.buscarUsuarioPorId(idUsuario)).thenReturn(usuario);
 
-        PropietarioResponseDto responseDto = new PropietarioResponseDto();
+        UsuarioResponseDto responseDto = new UsuarioResponseDto();
         when(mapper.toResponse(usuario)).thenReturn(responseDto);
 
         // Act
-        PropietarioResponseDto result = adminHandler.buscarUsuarioPorId(idUsuario);
+        UsuarioResponseDto result = adminHandler.buscarUsuarioPorId(idUsuario);
 
         // Assert
         Mockito.verify(servicePort, times(1)).buscarUsuarioPorId(idUsuario);

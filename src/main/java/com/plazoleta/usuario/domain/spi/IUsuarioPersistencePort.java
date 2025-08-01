@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IUsuarioPersistencePort {
-    void guardarPropietario(Usuario usuario);
+    Usuario guardarUsuario(Usuario usuario);
     Optional<Usuario> buscarUsuarioPorId(Long idUsuario);
     Optional<Usuario> buscarUsuarioPorEmail(String email);
 }

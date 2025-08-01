@@ -6,7 +6,7 @@ public class Usuario {
     private Long id;
     private String nombre;
     private String apellido;
-    private int documentoDeIdentidad;
+    private Integer documentoDeIdentidad;
     private String celular;
     private LocalDate fechaNacimiento;
     private String correo;
@@ -14,7 +14,7 @@ public class Usuario {
     private Rol rol;
 
     public Usuario(){}
-    public Usuario(Long id, Rol rol, String clave, String correo, LocalDate fechaNacimiento, String celular, int documentoDeIdentidad, String apellido, String nombre) {
+    public Usuario(Long id, Rol rol, String clave, String correo, LocalDate fechaNacimiento, String celular, Integer documentoDeIdentidad, String apellido, String nombre) {
         this.id = id;
         this.rol = rol;
         this.clave = clave;
@@ -48,11 +48,11 @@ public class Usuario {
         this.apellido = apellido;
     }
 
-    public int getDocumentoDeIdentidad() {
+    public Integer getDocumentoDeIdentidad() {
         return documentoDeIdentidad;
     }
 
-    public void setDocumentoDeIdentidad(int documentoDeIdentidad) {
+    public void setDocumentoDeIdentidad(Integer documentoDeIdentidad) {
         this.documentoDeIdentidad = documentoDeIdentidad;
     }
 
